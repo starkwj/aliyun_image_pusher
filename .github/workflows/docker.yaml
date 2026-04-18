@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [ main ]
+    paths:
+      - 'images.txt'
 
 
 env:
@@ -95,7 +97,7 @@ jobs:
             else
                 # 存镜像的命名空间
                 temp_map[$image_name]=$name_space
-            fi       
+            fi
         done < images.txt
         
         
@@ -129,11 +131,14 @@ jobs:
         
             name_space_prefix=""
             # 如果镜像名重名
-            if [[ -n "${duplicate_images[$image_name]}" ]]; then
-               #如果命名空间非空，将命名空间加到前缀
-               if [[ -n "${name_space}" ]]; then
-                  name_space_prefix="${name_space}_"
-               fi
+            # if [[ -n "${duplicate_images[$image_name]}" ]]; then
+            #    #如果命名空间非空，将命名空间加到前缀
+            #    if [[ -n "${name_space}" ]]; then
+            #       name_space_prefix="${name_space}_"
+            #    fi
+            # fi
+            if [[ -n "${name_space}" ]]; then
+              name_space_prefix="${name_space}_"
             fi
             
             # 将@sha256:等字符删除
