@@ -1,9 +1,9 @@
 # Docker Images Pusher
 
-使用Github Action将国外的Docker镜像转存到阿里云私有仓库，供国内服务器使用，免费易用<br>
+使用Github Action将国外的Docker镜像转存到阿里云/腾讯云私有仓库，供国内服务器使用，免费易用<br>
 - 支持DockerHub, gcr.io, k8s.io, ghcr.io等任意仓库<br>
 - 支持最大40GB的大型镜像<br>
-- 使用阿里云的官方线路，速度快<br>
+- 支持按文件分别触发阿里云与腾讯云上传<br>
 
 视频教程：https://www.bilibili.com/video/BV1Zn4y19743/
 
@@ -26,6 +26,14 @@ https://cr.console.aliyun.com/<br>
 
 ![](/doc/用户名密码.png)
 
+### 配置腾讯云
+登录腾讯云容器镜像服务（TCR）<br>
+https://console.cloud.tencent.com/tcr<br>
+创建命名空间（**TENCENT_NAME_SPACE**），获取登录用户名/密码与实例访问地址：<br>
+用户名（**TENCENT_REGISTRY_USER**）<br>
+密码（**TENCENT_REGISTRY_PASSWORD**）<br>
+仓库地址（**TENCENT_REGISTRY**）<br>
+
 
 ### Fork本项目
 Fork本项目<br>
@@ -34,18 +42,22 @@ Fork本项目<br>
 #### 配置环境变量
 进入Settings->Secret and variables->Actions->New Repository secret
 ![](doc/配置环境变量.png)
-将上一步的**四个值**<br>
-ALIYUN_NAME_SPACE,ALIYUN_REGISTRY_USER，ALIYUN_REGISTRY_PASSWORD，ALIYUN_REGISTRY<br>
+将阿里云和腾讯云对应的环境变量都配置到仓库 Secrets：<br>
+ALIYUN_NAME_SPACE, ALIYUN_REGISTRY_USER, ALIYUN_REGISTRY_PASSWORD, ALIYUN_REGISTRY<br>
+TENCENT_NAME_SPACE, TENCENT_REGISTRY_USER, TENCENT_REGISTRY_PASSWORD, TENCENT_REGISTRY<br>
 配置成环境变量
 
 ### 添加镜像
-打开images.txt文件，添加你想要的镜像 
+阿里云请编辑 `images.aliyun.txt`，腾讯云请编辑 `images.tencent.txt`<br>
+打开对应文件后，添加你想要的镜像<br>
 可以加tag，也可以不用(默认latest)<br>
 可添加 --platform=xxxxx 的参数指定镜像架构<br>
 可使用 k8s.gcr.io/kube-state-metrics/kube-state-metrics 格式指定私库<br>
 可使用 #开头作为注释<br>
 ![](doc/images.png)
-文件提交后，自动进入Github Action构建
+文件提交后，会自动触发对应的 workflow：<br>
+`images.aliyun.txt` -> `.github/workflows/aliyun.yaml`<br>
+`images.tencent.txt` -> `.github/workflows/tencent.yaml`
 
 ### 使用镜像
 回到阿里云，镜像仓库，点击任意镜像，可查看镜像状态。(可以改成公开，拉取镜像免登录)
@@ -60,7 +72,7 @@ shrimp-images 即 ALIYUN_NAME_SPACE(阿里云命名空间)<br>
 alpine 即 阿里云中显示的镜像名<br>
 
 ### 多架构
-需要在images.txt中用 --platform=xxxxx手动指定镜像架构
+需要在对应镜像文件中（`images.aliyun.txt` 或 `images.tencent.txt`）用 --platform=xxxxx 手动指定镜像架构
 指定后的架构会以前缀的形式放在镜像名字前面
 ![](doc/多架构.png)
 
@@ -75,6 +87,8 @@ xiaoyaliu/alist
 ![](doc/镜像重名.png)
 
 ### 定时执行
-修改/.github/workflows/docker.yaml文件
+按目标云修改对应 workflow 文件：<br>
+阿里云：`/.github/workflows/aliyun.yaml`<br>
+腾讯云：`/.github/workflows/tencent.yaml`<br>
 添加 schedule即可定时执行(此处cron使用UTC时区)
 ![](doc/定时执行.png)
