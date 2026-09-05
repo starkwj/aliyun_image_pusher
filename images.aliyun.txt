@@ -1,4 +1,4 @@
-vllm/vllm-openai:nightly-8a728663c1c3eeace834a95f5654fa653cc1998c
+vllm/vllm-openai:nightly-e962733e08d10f7ca65dac4df99e116460b8b174
 # 支持私库
 # k8s.gcr.io/kube-state-metrics/kube-state-metrics:v2.0.0
 # xhofe/alist:latest
